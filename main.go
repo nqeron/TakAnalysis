@@ -21,6 +21,7 @@ const(
 //regular expressions for commands
 var(
   //goRE = regexp.MustCompile("^go ([1-9]+)")
+  depth = flag.Int("depth", 6, "minimax depth")
 )
 
 
@@ -70,7 +71,7 @@ func main() {
 
 
     analysis.Meta(parsed,outfile,analysis.Config{
-        Depth: 6,
+        Depth: *depth,
         Sensitivity: 2,
         TimeLimit: time.Minute,
         Debug: false,
@@ -172,7 +173,7 @@ func main() {
         case "s":
           moveNum--
         case "ai":
-          ai := analysis.MakeAI(pos,6)
+          ai := analysis.MakeAI(pos,*depth)
           moves,val,_ := ai.Analyze(pos,time.Minute)
           fmt.Println("current value: ",val)
           fmt.Printf("anticipated moves: ")
@@ -196,11 +197,16 @@ func main() {
         case "q":   //stop exploring
           isExplore = false;
           moves = moves[:0]
-        case "?","h","help":
+        case "exit":
+          isSure := YN("Are you sure want to exit the program?")
+          if(isSure){
+            os.Exit(0)
+          }
+        /*case "?","h","help":
           var t string
           fmt.Scanln(&t)
           fmt.Println("Temp doc")
-          fmt.Println("?: ", t)
+          fmt.Println("?: ", t)*/
 
         default:
           newMove, err := ptn.ParseMove(cmd)
