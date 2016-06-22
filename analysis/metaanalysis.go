@@ -6,6 +6,9 @@ import (
   "math"
   "os"
   "fmt"
+
+  "golang.org/x/net/context"
+
   "github.com/nelhage/taktician/ptn"
   "github.com/nelhage/taktician/ai"
   "github.com/nelhage/taktician/tak"
@@ -69,13 +72,15 @@ func Meta(parsed *ptn.PTN,file *os.File, cfg Config){
     //moves[index] = m.Move
     //var pmoves []tak.Move
     var val int64
+    ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(*timeLimit))
+    defer cancel()
     switch {
     case p.ToMove() == tak.White:
       //log here?
-        _, val, _ = w.Analyze(p,cfg.TimeLimit)
+        _, val, _ = w.Analyze(ctx,p)
     case p.ToMove() == tak.Black :
       //log?
-        _, val, _ = b.Analyze(p,cfg.TimeLimit)
+        _, val, _ = b.Analyze(ctx,p)
     }
     values = append(values,float64(val))
     //values[index] = float64(val)

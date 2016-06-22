@@ -8,6 +8,7 @@ import (
   "strings"
   "time"
   //"regexp"
+  "golang.org/x/net/context"
   "github.com/nqeron/TakAnalysis/analysis"
   "github.com/nelhage/taktician/ptn"
   "github.com/nelhage/taktician/cli"
@@ -21,7 +22,8 @@ const(
 //regular expressions for commands
 var(
   //goRE = regexp.MustCompile("^go ([1-9]+)")
-  depth = flag.Int("depth", 6, "minimax depth")
+  //t = 8
+  level = flag.Int("level", 8, "minimax level")
 )
 
 
@@ -71,7 +73,7 @@ func main() {
 
 
     analysis.Meta(parsed,outfile,analysis.Config{
-        Depth: *depth,
+        Depth: *level,
         Sensitivity: 2,
         TimeLimit: time.Minute,
         Debug: false,
@@ -173,8 +175,10 @@ func main() {
         case "s":
           moveNum--
         case "ai":
-          ai := analysis.MakeAI(pos,*depth)
-          moves,val,_ := ai.Analyze(pos,time.Minute)
+          ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Minute))
+	        defer cancel()
+          ai := analysis.MakeAI(pos,*level)
+          moves,val,_ := ai.Analyze(ctx,pos)
           fmt.Println("current value: ",val)
           fmt.Printf("anticipated moves: ")
           for _, m := range moves{
@@ -202,12 +206,6 @@ func main() {
           if(isSure){
             os.Exit(0)
           }
-        /*case "?","h","help":
-          var t string
-          fmt.Scanln(&t)
-          fmt.Println("Temp doc")
-          fmt.Println("?: ", t)*/
-
         default:
           newMove, err := ptn.ParseMove(cmd)
           if(err != nil){
