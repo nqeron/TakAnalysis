@@ -85,7 +85,8 @@ func TransformMoves(moves []tak.Move, size int) error{
 
     m = moves[0] //update to new first move
 
-    if mDist(m.X,m.Y,size,size) > size { //if move is still above diagonal
+    if DEBUG {log.Println("mDist from n,n: ",mDist(m.X,m.Y,size,0)) }
+    if mDist(m.X,m.Y,size,0) > size { //if move is still above diagonal
       mirrorDiag(moves,size)
       return nil
     }
@@ -151,13 +152,15 @@ func mirrorDiag(moves []tak.Move,size int) {
   if DEBUG { log.Println("Diagtransform, size: ",size); }
   for i := range moves{
     t := moves[i]
-    y := moves[i].Y
-    moves[i].Y = size - moves[i].X
-    moves[i].X = y
+    if moves[i].X != moves[i].Y {
+      y := moves[i].Y
+      moves[i].Y = moves[i].X //was size-X , -- may revert to this for a different setup?
+      moves[i].X = y
+    } // swap moves only for non-diagonals?
     if moves[i].Type == tak.SlideUp{ moves[i].Type = tak.SlideRight
     }else if moves[i].Type == tak.SlideDown{ moves[i].Type = tak.SlideLeft
-    }else if moves[i].Type == tak.SlideRight{ moves[i].Type = tak.SlideDown
-    }else if moves[i].Type == tak.SlideLeft{ moves[i].Type = tak.SlideUp;}
+    }else if moves[i].Type == tak.SlideRight{ moves[i].Type = tak.SlideUp
+    }else if moves[i].Type == tak.SlideLeft{ moves[i].Type = tak.SlideDown;}
     if DEBUG { log.Printf("%s --> %s",t,moves[i]); }
   }
 }
