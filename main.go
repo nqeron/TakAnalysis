@@ -16,7 +16,7 @@ import (
 )
 
 const(
-  VERSION = "0.1"
+  VERSION = "0.1.1"
 )
 
 //regular expressions for commands
@@ -95,7 +95,7 @@ func main() {
     }
   }
 
-  parsedSize := len(parsed.Ops) / 3
+  parsedSize := len(parsed.Ops)/ 3.0
   //options
   var (
     showAll = false //alt - show current
@@ -120,17 +120,32 @@ func main() {
     } else{
       low := (moveNum-1)*3
       up := moveNum*3-1
-      if moveColor == tak.Black { up = up +2}
+      //if moveColor == tak.White && up >
+      if (moveColor == tak.Black) { up = up +2}
+      fmt.Printf("moveNum: %d, len(ops): %d, parsedSize: %s, moveColor: %s",moveNum,len(parsed.Ops),parsedSize, moveColor)
 
       fmt.Printf("  (%d / %d)",moveNum, parsedSize)
-      for i := low; i <= up; i++{
-        op := parsed.Ops[i]
-        switch o := op.(type) {
-          case *ptn.MoveNumber:
-            fmt.Printf("\n%d.", o.Number)
-          case *ptn.Move:
-            fmt.Printf(" %s%s", ptn.FormatMove(&o.Move), o.Modifiers)
-          default:
+      for i := low; i <= up ; i++{
+        if i >= len(parsed.Ops){
+          if moveColor == tak.Black {
+            fmt.Printf(" [__]")
+            break // don't print more
+          }
+          fmt.Printf(" __")
+        } else {
+          op := parsed.Ops[i]
+          switch o := op.(type) {
+            case *ptn.MoveNumber:
+              fmt.Printf("\n%d.", o.Number)
+            case *ptn.Move:
+              if (i%3 == 2 && moveColor == tak.Black) ||
+                 (i%3 == 1 && moveColor == tak.White){
+                fmt.Printf(" [%s%s]", ptn.FormatMove(&o.Move), o.Modifiers)
+              }else{
+                fmt.Printf(" %s%s", ptn.FormatMove(&o.Move), o.Modifiers)
+              }
+            default:
+          }
         }
       }
 
