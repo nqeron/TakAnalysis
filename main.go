@@ -95,7 +95,12 @@ func main() {
     }
   }
 
-  parsedSize := len(parsed.Ops)/ 3.0
+  var parsedSize int
+  if len(parsed.Ops) % 3 == 0 {
+    parsedSize = len(parsed.Ops)/ 3.0
+  } else{
+    parsedSize = len(parsed.Ops)/ 3.0 + 1
+  }
   //options
   var (
     showAll = false //alt - show current
@@ -122,7 +127,7 @@ func main() {
       up := moveNum*3-1
       //if moveColor == tak.White && up >
       if (moveColor == tak.Black) { up = up +2}
-      fmt.Printf("moveNum: %d, len(ops): %d, parsedSize: %s, moveColor: %s",moveNum,len(parsed.Ops),parsedSize, moveColor)
+      //fmt.Printf("moveNum: %d, len(ops): %d, parsedSize: %s, moveColor: %s",moveNum,len(parsed.Ops),parsedSize, moveColor)
 
       fmt.Printf("  (%d / %d)",moveNum, parsedSize)
       for i := low; i <= up ; i++{
