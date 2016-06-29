@@ -26,7 +26,7 @@ func main() {
     dir := flag.Arg(0)
 
     if *out == ""{
-      *out = dir[:len(dir)-1]+"-out/"
+      *out = dir[:len(dir)]+"-out/"
 
     }
     _, err := os.Stat(*out)
