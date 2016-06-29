@@ -161,6 +161,10 @@ func main() {
       cli.RenderBoard(os.Stdout, pos)
     }
 
+    //keep hold of last (valid) position
+    lastMoveNum := moveNum
+    lastMoveColor := moveColor
+
     //handle commands
     for {
       var cmd string
@@ -235,6 +239,7 @@ func main() {
             pos, err = pos.Move(&newMove)
             if err != nil{
               fmt.Println("Movement error: ",err)
+              pos = lastPos
               continue //go back to commands ?
             }
             moves = append(moves,lastPos)
@@ -249,6 +254,8 @@ func main() {
         pos, err = parsed.PositionAtMove(moveNum,moveColor)
         if err != nil{
           fmt.Println("position isn't valid: ",err)
+          moveNum = lastMoveNum
+          moveColor = lastMoveColor
           continue
         }
       }
