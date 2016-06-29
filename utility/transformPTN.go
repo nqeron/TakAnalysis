@@ -85,7 +85,7 @@ func TransformMoves(moves []tak.Move, size int) error{
 
     m = moves[0] //update to new first move
 
-    if DEBUG {log.Println("mDist from n,n: ",mDist(m.X,m.Y,size,0)) }
+    if DEBUG {log.Println("mDist from n,0: ",mDist(m.X,m.Y,size,0)) }
     if mDist(m.X,m.Y,size,0) > size { //if move is still above diagonal
       mirrorDiag(moves,size)
       return nil
@@ -115,7 +115,8 @@ func TransformMoves(moves []tak.Move, size int) error{
     }
   }
 
-  if mDist(offM.X,offM.Y,size,size) > size {
+  if DEBUG { log.Printf("offM: %s, dist to n,0: %d \n",offM,mDist(offM.X,offM.Y,size,0)) }
+  if mDist(offM.X,offM.Y,size,0) > size {
     mirrorDiag(moves,size)
   }
 
@@ -126,11 +127,11 @@ func TransformMoves(moves []tak.Move, size int) error{
 func mirrorX(moves []tak.Move,size int) {
   if DEBUG { log.Println("Xtransform, size: ",size); }
   for i := range moves{
-    t := moves[i]
+    //t := moves[i]
     moves[i].X = size - moves[i].X
     if moves[i].Type == tak.SlideRight{ moves[i].Type = tak.SlideLeft
     }else if moves[i].Type == tak.SlideLeft{ moves[i].Type = tak.SlideRight;}
-    if DEBUG { log.Printf("%s --> %s",t,moves[i]); }
+    //if DEBUG { log.Printf("%s --> %s",t,moves[i]); }
   }
 
 }
@@ -139,11 +140,11 @@ func mirrorX(moves []tak.Move,size int) {
 func mirrorY(moves []tak.Move,size int) {
   if DEBUG { log.Println("Ytransform, size: ",size); }
   for i := range moves{
-    t := moves[i]
+    //t := moves[i]
     moves[i].Y = size - moves[i].Y
     if moves[i].Type == tak.SlideUp{ moves[i].Type = tak.SlideDown
     }else if moves[i].Type == tak.SlideDown{ moves[i].Type = tak.SlideUp;}
-    if DEBUG { log.Printf("%s --> %s",t,moves[i]); }
+    //if DEBUG { log.Printf("%s --> %s",t,moves[i]); }
   }
 }
 
@@ -151,7 +152,7 @@ func mirrorY(moves []tak.Move,size int) {
 func mirrorDiag(moves []tak.Move,size int) {
   if DEBUG { log.Println("Diagtransform, size: ",size); }
   for i := range moves{
-    t := moves[i]
+    //t := moves[i]
     if moves[i].X != moves[i].Y {
       y := moves[i].Y
       moves[i].Y = moves[i].X //was size-X , -- may revert to this for a different setup?
@@ -161,11 +162,11 @@ func mirrorDiag(moves []tak.Move,size int) {
     }else if moves[i].Type == tak.SlideDown{ moves[i].Type = tak.SlideLeft
     }else if moves[i].Type == tak.SlideRight{ moves[i].Type = tak.SlideUp
     }else if moves[i].Type == tak.SlideLeft{ moves[i].Type = tak.SlideDown;}
-    if DEBUG { log.Printf("%s --> %s",t,moves[i]); }
+    //if DEBUG { log.Printf("%s --> %s",t,moves[i]); }
   }
 }
 
 //calculates manhattan distance from point (a,b) to (x,y)
 func mDist(a,b,x,y int) int{
-  return int(math.Abs(float64(x-a + y-b)))
+  return int( math.Abs(float64(x-a)) + math.Abs(float64(y-b) ) )
 }
