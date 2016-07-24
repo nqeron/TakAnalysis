@@ -110,6 +110,7 @@ func main() {
     moveNum = 1
     moveColor = tak.White
     moves = make([]*tak.Position,0,5)
+    moveNote = make([]tak.Move,0,5)
     isExplore = false
   )
 
@@ -156,6 +157,14 @@ func main() {
       }
 
 
+    }
+
+    if isExplore{
+      fmt.Printf("\n {")
+      for _,m := range moveNote {
+        fmt.Printf(ptn.FormatMove(&m) + ", ")
+      }
+      fmt.Printf("}")
     }
 
     if displayBoard{
@@ -219,6 +228,7 @@ func main() {
           }else{
             pos = moves[len(moves)-1]
             moves = moves[:len(moves)-1]
+            moveNote = moveNote[:len(moveNote)-1]
             moveColor = moveColor ^ 192
             if len(moves) <= 0{
               isExplore = false
@@ -227,6 +237,7 @@ func main() {
         case "q":   //stop exploring
           isExplore = false;
           moves = moves[:0]
+          moveNote = moveNote[:0]
         case "help","?":
           printHelp()
         case "exit":
@@ -234,11 +245,12 @@ func main() {
           if(isSure){
             os.Exit(0)
           }
-        default:
+        default: //by default try to see if this is a legal move
           newMove, err := ptn.ParseMove(cmd)
           if(err != nil){
             fmt.Println("Command not recognized! cmd: ",cmd)
           }else{ // handling a move
+            moveNote = append(moveNote,newMove)
             lastPos := pos
             pos, err = pos.Move(&newMove)
             if err != nil{
@@ -292,10 +304,13 @@ func YN(q string) bool {
 func printHelp() {
   fmt.Printf(
   " print: prints out the entire PTN \n" +
-  " go [move] {black}: moves the board to the given move in the PTN \n" +
+  " go [move] {black}: moves the board to the given move line in the PTN \n" +
    " n or next: moves to the next ply \n" +
    " p or prev: moves to the previous ply \n" +
    " ai: calls up the ai analysis for the given position \n" +
    " exit: ends the program \n" +
+   " {move}: e.g. a1+, will make the given move in the position \n" +
+   " q: returns to original PTN \n" +
+   " u or undo: undo last move made \n" +
    " For more details, see the the Readme file \n")
 }
