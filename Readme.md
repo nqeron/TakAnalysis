@@ -1,8 +1,8 @@
-## TakAnalysis ##
+# TakAnalysis
 
 This repository is dedicated to code that should help with analysis of Tak games.
 
-## Installation ##
+#Installation
 
 Once this is uploaded to github, you should be able to install it with:
 
@@ -10,32 +10,29 @@ Once this is uploaded to github, you should be able to install it with:
 go get github.com/nqeron/takanalysis
 ```
 
-## Usage ##
+#Programs #
 
-At the moment, I only have one main program: takanalysis, run this from command line with:
+## [takanalysis][takanalysis doc]
+The main analysis program, [takanalysis][takanalysis doc], can be run from command line with:
 
 ```
 takanalysis [file] [-d depth]
 ```
 
-This will open a ptn file for analysis. Once opened, this can be directed with various commands:
+[takanalysis doc]: https://github.com/nqeron/TakAnalysis/analysis/readme.md
 
-- print -- prints out the entire PTN
-- go [move] {black} -- moves the board to the given move in the PTN, use black to move to black's move
+## [transformPTN][transformPTN doc]
+  A program that will [transformPTN][transformPTN doc]  into a symmetrically unique PTN
+  (Can also be run on a directory)
 
-- n / next -- moves to the next ply
-- p / prev -- moves to the previous ply
-- ai -- calls up the ai analysis for the given position
-- exit -- ends the program
-- Alternatively navigate the plys with w/a/s/d:
-  -- a/d - forward back one ply
-  -- w/s - forward back one full turn
+```
+  transformPTN [-rv] [file ...] {-out ...}
+```
+- -r=true - recurse over a directory
+- -v=true - verbose mode
+- -out= sets output file / directory, otherwise uses default
 
-To start exploring alternative moves, just enter moves one at a time using standard notation (e.g. a5, 3c3>21). To undo moves, use 'u' or 'undo'. To stop exploring and exit out of the current chain, use 'q' or 'quit'
-
-## Analysis ##
-
-Currently, the analysis run locates changes in positional value that go significantly above or below the median. When the analysis is run, it will create a new file with the "-analysis.ptn" suffix, marked up with "!"s and "?"s
+[transformPTN doc]:https://github.com/nqeron/TakAnalysis/cmd/transformPTN/readme.md
 
 ## TO-DOs ##
 
