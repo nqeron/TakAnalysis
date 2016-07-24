@@ -16,7 +16,7 @@ import (
 )
 
 const(
-  VERSION = "0.1.1"
+  VERSION = "0.1.2"
 )
 
 //regular expressions for commands
@@ -25,6 +25,8 @@ var(
   //t = 8
   level = flag.Int("level", 8, "minimax level")
   quiet = flag.Bool("q",false,"quiet the analysis printout")
+  showComment = flag.Bool("comm",false,"show comments with annotation")
+  debug = flag.Bool("d",false,"debug")
 )
 
 
@@ -77,7 +79,9 @@ func main() {
         Depth: *level,
         Sensitivity: 2,
         TimeLimit: time.Minute,
-        Debug: !*quiet,
+        Debug: *debug,
+        Verbose: !*quiet,
+        AnnotationOnly: !*showComment,
     })
 
     outfile.Close()

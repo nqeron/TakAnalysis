@@ -47,5 +47,7 @@ func main() {
       Sensitivity: *sensitivity,
       TimeLimit: *timeLimit,
       Debug: *debug,
+      Verbose: false,
+      AnnotationOnly: false,
   })
 }
