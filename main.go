@@ -24,6 +24,7 @@ var(
   //goRE = regexp.MustCompile("^go ([1-9]+)")
   //t = 8
   level = flag.Int("level", 8, "minimax level")
+  quiet = flag.Bool("q",false,"quiet the analysis printout")
 )
 
 
@@ -76,7 +77,7 @@ func main() {
         Depth: *level,
         Sensitivity: 2,
         TimeLimit: time.Minute,
-        Debug: false,
+        Debug: !*quiet,
     })
 
     outfile.Close()
@@ -167,6 +168,7 @@ func main() {
 
     //handle commands
     for {
+      fmt.Printf("> ")
       var cmd string
       var num int
       var mod string
@@ -225,6 +227,8 @@ func main() {
         case "q":   //stop exploring
           isExplore = false;
           moves = moves[:0]
+        case "help","?":
+          printHelp()
         case "exit":
           isSure := YN("Are you sure want to exit the program?")
           if(isSure){
@@ -272,6 +276,7 @@ func YN(q string) bool {
   var in string
   for {
     fmt.Println(q)
+    fmt.Printf("?> ")
     fmt.Scanln(&in)
     in = strings.ToLower(in)
     if (in == "y") || (in == "yes") {
@@ -282,4 +287,15 @@ func YN(q string) bool {
       fmt.Println("I don't recognize that response")
     }
   }
+}
+
+func printHelp() {
+  fmt.Printf(
+  " print: prints out the entire PTN \n" +
+  " go [move] {black}: moves the board to the given move in the PTN \n" +
+   " n or next: moves to the next ply \n" +
+   " p or prev: moves to the previous ply \n" +
+   " ai: calls up the ai analysis for the given position \n" +
+   " exit: ends the program \n" +
+   " For more details, see the the Readme file \n")
 }
