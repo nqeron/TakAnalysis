@@ -21,6 +21,9 @@ takanalysis [file] [-d depth]
 
 [takanalysis doc]: https://github.com/nqeron/TakAnalysis/analysis/readme.md
 
+## [analyze][analyze doc]
+Single use command to analyze and annotate a given file or directory.
+
 ## [transformPTN][transformPTN doc]
   A program that will [transformPTN][transformPTN doc]  into a symmetrically unique PTN
   (Can also be run on a directory)
@@ -32,6 +35,7 @@ takanalysis [file] [-d depth]
 - -v=true - verbose mode
 - -out= sets output file / directory, otherwise uses default
 
+[analyze doc]: https://github.com/nqeron/TakAnalysis/cmd/analyze/readme.md
 [transformPTN doc]:https://github.com/nqeron/TakAnalysis/cmd/transformPTN/readme.md
 
 ## TO-DOs ##
@@ -39,4 +43,5 @@ takanalysis [file] [-d depth]
 - Testing / Refinement
   - Explore outputs on various games to help improve
   - More detailed comments / mark-up?
+    - annotate tak, tinuë (& missed tinuë)
 - GUI

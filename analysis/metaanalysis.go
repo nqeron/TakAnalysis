@@ -70,7 +70,7 @@ func Meta(parsed *ptn.PTN,file *os.File, cfg Config){
     //moves[index] = m.Move
     //var pmoves []tak.Move
     var val int64
-    ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(*timeLimit))
+    ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(cfg.TimeLimit))
     defer cancel()
     switch {
     case p.ToMove() == tak.White:
