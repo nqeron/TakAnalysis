@@ -94,7 +94,7 @@ func Meta(parsed *ptn.PTN,file *os.File, cfg Config){
   //extract flagging for clarity
   var flags [][]metaFlag = make([][]metaFlag, len(values))
   flagVals(&values, flags)
-  flagPositions(&movePos,flags)
+  flagPositions(&movePos,flags,w)
   flagMoves(&moves,flags)
   if cfg.Debug { log.Println("flags: ",flags);
   log.Println("len vals: ",len(values), "moves: ", len(moves)) }
@@ -158,22 +158,34 @@ func writeMoveFlags(moveS string,flags []metaFlag,cfg Config) string{
 }
 
 //flags based on position of board at given move
-func flagPositions(movePos *[]*tak.Position,flags [][]metaFlag){
+func flagPositions(movePos *[]*tak.Position,flags [][]metaFlag, ai *ai.MinimaxAI){
 
-  /*for i,pos := range *movePos{
-    if isTinue(pos){
-      flags[i] = append(flags[i],metaFlag{Name:"isTinue",Annotation:"''", Level:1})
-    }else if move, ok = hasTinue(pos); ok{
-      flags[i] = append(flags[i],metaFlag{Name:"hasTinue",Value:move, Level:1})
+  for i,_ := range *movePos{
+    pos := (*movePos)[i]
+    prevTin := 0
+    if i-1 >= 0{
+      _, prevTin, _ = HasTinue((*movePos)[i-1],ai);
+    }
+    move, curTin, de := HasTinue(pos,ai);
+    fMove := fmt.Sprintf("i: %d, cVal: %f",i,de)
+    if move != nil {
+      fMove += ptn.FormatMove(move)
+    }
+    if prevTin != 0 && curTin == 0 && i != len(flags)-1{
+      flags[i] = append(flags[i],metaFlag{Name:"hadTinue", Annotation: "", Value:fMove, Level:1})
+    } else if prevTin !=0 && curTin !=0{
+      flags[i] = append(flags[i],metaFlag{Name:"isTinue", Annotation: "", Value:fMove, Level:1})
+    } else if prevTin ==0 && curTin < 0{
+      flags[i] = append(flags[i],metaFlag{Name:"newTinue", Annotation: "''", Value:fMove, Level:1})
+    } else if prevTin==0 && curTin > 0{
+      flags[i] = append(flags[i],metaFlag{Name:"yieldsTinue", Annotation: "??", Value:fMove, Level:1})
     }
 
-    if isTak(pos){
-      flags[i] = append(flags[i],metaFlag{Name:"isTak",Annotation:"'", Level:1})
+    if move, ok := IsTak(pos); ok{
+      flags[i] = append(flags[i],metaFlag{Name:"isTak",Annotation:"'", Value:ptn.FormatMove(move), Level:1})
     }
   }
 
-  */
-  //to-do
 }
 
 //flags moves based on moves
@@ -250,5 +262,6 @@ func MakeAI(p *tak.Position, depth int) *ai.MinimaxAI{
 
     NoSort: !sort,
     NoTable: !table,
+    NoNullMove: false,
   })
 }
