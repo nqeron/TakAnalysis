@@ -11,16 +11,16 @@ import (
 
 //HasTinue - decides whether a given position has tinue, uses ai to do so
 // returns - next (predicted) move for tinue, isTinue (bool), value of position
-func HasTinue(pos *tak.Position, ai *tai.MinimaxAI) (move *tak.Move, ok int) {
+func HasTinue(pos *tak.Position, ai *tai.MinimaxAI) (move *tak.Move, ok int, depth int) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Minute))
 	defer cancel()
 	m, v, _ := ai.Analyze(ctx, pos)
 	//is this best way to check for tinuê?
 	if (v >= tai.WinThreshold || v <= -tai.WinThreshold) && m != nil && len(m) > 0 {
 		x := float64(v)
-		return &m[0], int(x / math.Abs(x))
+		return &m[0], int(x / math.Abs(x)), len(m)
 	}
-	return nil, 0
+	return nil, 0, 0
 }
 
 //IsTak - returns whether given position is Tak or not

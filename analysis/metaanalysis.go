@@ -180,21 +180,30 @@ func flagPositions(movePos *[]*tak.Position, flags [][]metaFlag, ai *ai.MinimaxA
 	for i := range *movePos {
 		pos := (*movePos)[i]
 
-		move, curTin := HasTinue(pos, ai)
+		move, curTin, depth := HasTinue(pos, ai)
 		fMove := ""
+
 		if move != nil {
+			fMove = fmt.Sprintf("Depth: %d, Move: ", depth)
 			fMove += ptn.FormatMove(move)
 		}
 		if (prevTin != 0 || prevYield) && curTin == 0 && i != len(flags)-1 {
-			flags[i] = append(flags[i], metaFlag{Name: "hadTinue", Annotation: "", Value: fMove, Level: 1})
+			flags[i] = append(flags[i], metaFlag{Name: "wasTinue", Annotation: "", Value: fMove, Level: 1})
 			prevYield = false
-		} else if prevTin != 0 && curTin != 0 {
-			flags[i] = append(flags[i], metaFlag{Name: "isTinue", Annotation: "", Value: fMove, Level: 1})
+		} else if prevTin != 0 && (curTin == -prevTin) { //same tinue (opposite sign)
+			if prevYield {
+				flags[i] = append(flags[i], metaFlag{Name: "newTinue", Annotation: "''", Value: fMove, Level: 1})
+			} else {
+				flags[i] = append(flags[i], metaFlag{Name: "stepTinue", Annotation: "", Value: fMove, Level: 1})
+			}
 			prevYield = false
-		} else if (prevTin == 0 || prevYield) && ((curTin < 0 && i%2 == 1) || (curTin > 0 && i%2 == 0)) {
+		} else if prevTin != 0 && (curTin == prevTin) { //different tinue?
+			flags[i] = append(flags[i], metaFlag{Name: "yieldsTinue", Annotation: "??", Value: fMove, Level: 1})
+			prevYield = true
+		} else if (prevTin == 0 || prevYield) && ((curTin > 0 && i%2 == 1) || (curTin < 0 && i%2 == 0)) {
 			flags[i] = append(flags[i], metaFlag{Name: "newTinue", Annotation: "''", Value: fMove, Level: 1})
 			prevYield = false
-		} else if (prevTin == 0 || prevYield) && ((curTin > 0 && i%2 == 1) || (curTin < 0 && i%2 == 0)) {
+		} else if (prevTin == 0 || prevYield) && ((curTin < 0 && i%2 == 1) || (curTin > 0 && i%2 == 0)) {
 			flags[i] = append(flags[i], metaFlag{Name: "yieldsTinue", Annotation: "??", Value: fMove, Level: 1})
 			prevYield = true //set to 0 to force a newTinue or hadTinue next
 		}
