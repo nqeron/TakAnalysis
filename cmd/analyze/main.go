@@ -46,9 +46,7 @@ func main() {
 		fmt.Println("Outputting to: ", *out)
 
 		e := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-			if *verbose {
-				fmt.Println(path)
-			}
+			fmt.Println("Analyzing: ", path)
 			if strings.HasSuffix(path, ".ptn") {
 				outfile := filepath.Join(*out, filepath.Base(path))
 				if *verbose {

@@ -200,10 +200,10 @@ func flagPositions(movePos *[]*tak.Position, flags [][]metaFlag, ai *ai.MinimaxA
 		} else if prevTin != 0 && (curTin == prevTin) { //different tinue?
 			flags[i] = append(flags[i], metaFlag{Name: "yieldsTinue", Annotation: "??", Value: fMove, Level: 1})
 			prevYield = true
-		} else if (prevTin == 0 || prevYield) && ((curTin > 0 && i%2 == 1) || (curTin < 0 && i%2 == 0)) {
+		} else if (prevTin == 0 || prevYield) && ((curTin > 0 && i%2 == 0) || (curTin < 0 && i%2 == 1)) {
 			flags[i] = append(flags[i], metaFlag{Name: "newTinue", Annotation: "''", Value: fMove, Level: 1})
 			prevYield = false
-		} else if (prevTin == 0 || prevYield) && ((curTin < 0 && i%2 == 1) || (curTin > 0 && i%2 == 0)) {
+		} else if (prevTin == 0 || prevYield) && ((curTin < 0 && i%2 == 0) || (curTin > 0 && i%2 == 1)) {
 			flags[i] = append(flags[i], metaFlag{Name: "yieldsTinue", Annotation: "??", Value: fMove, Level: 1})
 			prevYield = true //set to 0 to force a newTinue or hadTinue next
 		}
