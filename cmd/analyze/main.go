@@ -23,7 +23,7 @@ var (
 	sensitivity = flag.Int("sensitivity", 1, "level to highlight")
 	recurs      = flag.Bool("r", false, "recurs over directory")
 	verbose     = flag.Bool("v", false, "verbose")
-	noComm      = flag.Bool("noComm", false, "turn comment generation off")
+	noteOnly    = flag.Bool("noteOnly", false, "only generate basic notation")
 )
 
 func main() {
@@ -98,7 +98,7 @@ func analyzeFile(fileName string, out string) error {
 		TimeLimit:      *timeLimit,
 		Debug:          *debug,
 		Verbose:        *verbose,
-		AnnotationOnly: *noComm,
+		AnnotationOnly: *noteOnly,
 	})
 
 	return nil

@@ -15,16 +15,6 @@ import (
 	"github.com/nelhage/taktician/tak"
 )
 
-var (
-	//depth = 6 //flag.Int("depth", 6, "minimax depth")
-	seed int64 //flag.Int64("seed",0,"random seed")
-	//debug = 0 //flag.Int("debug", 1, "debug level")
-	//timeLimit = time.Minute //flag.Duration("limit", time.Minute, "analysis time limit")
-
-	sort  = true
-	table = true
-)
-
 type metaFlag struct {
 	Name       string
 	Value      string
@@ -52,20 +42,33 @@ const (
 	noFlag = 0
 )
 
+//Cfg - configuration passed to analysis program
+var (
+	//depth = 6 //flag.Int("depth", 6, "minimax depth")
+	seed int64 //flag.Int64("seed",0,"random seed")
+	//debug = 0 //flag.Int("debug", 1, "debug level")
+	//timeLimit = time.Minute //flag.Duration("limit", time.Minute, "analysis time limit")
+
+	sort  = true
+	table = true
+	Cfg   = Config{Sensitivity: 1, Depth: 8, TimeLimit: time.Minute, Debug: false, Verbose: false, AnnotationOnly: false}
+)
+
 //Meta - meta-analysis on a ptn file
 //assume ptn is parsed?
-func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
+func Meta(parsed *ptn.PTN, file *os.File, customCfg Config) {
+	Cfg = customCfg
 	p, e := parsed.InitialPosition()
 	if e != nil {
 		log.Fatalln("initial: ", e)
 	}
-	w, b := MakeAI(p, cfg.Depth), MakeAI(p, cfg.Depth)
+	w, b := MakeAI(p, Cfg.Depth), MakeAI(p, Cfg.Depth)
 
 	var values = make(stats.Float64Data, 0, len(parsed.Ops))
 	var moves = make([]tak.Move, 0, len(parsed.Ops))
 	var movePos = make([]*tak.Position, 0, len(parsed.Ops))
 	//index := -1
-	if cfg.Debug {
+	if Cfg.Debug {
 		log.Println("Analyzing ...")
 	}
 	for i, o := range parsed.Ops {
@@ -75,26 +78,28 @@ func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
 		}
 		//index++;
 
-		if (cfg.Debug || cfg.Verbose) && (i%2 == 0) {
+		if (Cfg.Debug || Cfg.Verbose) && (i%2 == 0) {
 			log.Println("...  ", i, "/", len(parsed.Ops))
 		}
 		moves = append(moves, m.Move)
 		//moves[index] = m.Move
 		//var pmoves []tak.Move
-		var val int64
-		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(cfg.TimeLimit))
-		defer cancel()
-		switch {
-		case p.ToMove() == tak.White:
-			//log here?
-			_, val, _ = w.Analyze(ctx, p)
-		case p.ToMove() == tak.Black:
-			//log?
-			_, val, _ = b.Analyze(ctx, p)
-		}
-		values = append(values, float64(val))
-		//values[index] = float64(val)
 
+		if !Cfg.AnnotationOnly {
+			var val int64
+			ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(Cfg.TimeLimit))
+			defer cancel()
+			switch {
+			case p.ToMove() == tak.White:
+				//log here?
+				_, val, _ = w.Analyze(ctx, p)
+			case p.ToMove() == tak.Black:
+				//log?
+				_, val, _ = b.Analyze(ctx, p)
+			}
+			values = append(values, float64(val))
+			//values[index] = float64(val)
+		}
 		var e error
 		p, e = p.Move(&m.Move)
 		if e != nil {
@@ -104,11 +109,13 @@ func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
 	}
 
 	//extract flagging for clarity
-	var flags = make([][]metaFlag, len(values))
-	flagVals(&values, flags)
+	var flags = make([][]metaFlag, len(moves))
+	if !Cfg.AnnotationOnly {
+		flagVals(&values, flags)
+		flagMoves(&moves, flags)
+	}
 	flagPositions(&movePos, flags, w)
-	flagMoves(&moves, flags)
-	if cfg.Debug {
+	if Cfg.Debug {
 		log.Println("flags: ", flags)
 		log.Println("len vals: ", len(values), "moves: ", len(moves))
 	}
@@ -126,7 +133,7 @@ func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
 		wFlag := flags[i]
 
 		wMoveS := ptn.FormatMove(&wMoveM)
-		wMoveS = writeMoveFlags(wMoveS, wFlag, cfg)
+		wMoveS = writeMoveFlags(wMoveS, wFlag)
 
 		bMoveS := ""
 		var bVal float64
@@ -135,11 +142,11 @@ func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
 			bFlag := flags[i+1]
 			bVal = values[i+1]
 			bMoveS = ptn.FormatMove(&bMoveM)
-			bMoveS = writeMoveFlags(bMoveS, bFlag, cfg)
+			bMoveS = writeMoveFlags(bMoveS, bFlag)
 		}
 
 		var moveNum = (i + 2) / 2
-		if cfg.Debug {
+		if Cfg.Debug {
 			log.Printf("%d. %s %s: vals: %f, %f", moveNum, wMoveS, bMoveS, values[i], bVal)
 		}
 		file.WriteString(fmt.Sprintf("%d. %s %s\n", moveNum, wMoveS, bMoveS))
@@ -147,13 +154,13 @@ func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
 }
 
 //writes a move's flags to the PTN
-func writeMoveFlags(moveS string, flags []metaFlag, cfg Config) string {
+func writeMoveFlags(moveS string, flags []metaFlag) string {
 	annot := ""
 	comm := ""
 	for _, flag := range flags {
-		if cfg.Sensitivity < 0 {
+		if Cfg.Sensitivity < 0 {
 			continue
-		} else if cfg.Sensitivity < flag.Level {
+		} else if Cfg.Sensitivity < flag.Level {
 			continue
 		}
 		if flag.Annotation != "" {
@@ -166,7 +173,7 @@ func writeMoveFlags(moveS string, flags []metaFlag, cfg Config) string {
 		}
 	}
 
-	if comm == "" || cfg.AnnotationOnly {
+	if comm == "" || Cfg.AnnotationOnly {
 		return moveS + annot
 	}
 	return moveS + annot + " {" + comm + "}"
@@ -175,9 +182,16 @@ func writeMoveFlags(moveS string, flags []metaFlag, cfg Config) string {
 //flags based on position of board at given move
 func flagPositions(movePos *[]*tak.Position, flags [][]metaFlag, ai *ai.MinimaxAI) {
 
+	if Cfg.Verbose {
+		log.Println("Flagging positions...")
+	}
 	prevTin := 0
 	prevYield := false
 	for i := range *movePos {
+
+		if Cfg.Verbose && i%5 == 0 {
+			log.Println(i, "/", len(*movePos))
+		}
 		pos := (*movePos)[i]
 
 		move, curTin, depth := HasTinue(pos, ai)
@@ -198,14 +212,16 @@ func flagPositions(movePos *[]*tak.Position, flags [][]metaFlag, ai *ai.MinimaxA
 			}
 			prevYield = false
 		} else if prevTin != 0 && (curTin == prevTin) { //different tinue?
-			flags[i] = append(flags[i], metaFlag{Name: "yieldsTinue", Annotation: "??", Value: fMove, Level: 1})
+			flags[i] = append(flags[i], metaFlag{Name: "yieldsTinueA", Annotation: "??", Value: fMove, Level: 1})
 			prevYield = true
-		} else if (prevTin == 0 || prevYield) && ((curTin > 0 && i%2 == 0) || (curTin < 0 && i%2 == 1)) {
+		} else if (prevTin == 0 || prevYield) && (curTin < 0) {
 			flags[i] = append(flags[i], metaFlag{Name: "newTinue", Annotation: "''", Value: fMove, Level: 1})
 			prevYield = false
-		} else if (prevTin == 0 || prevYield) && ((curTin < 0 && i%2 == 0) || (curTin > 0 && i%2 == 1)) {
-			flags[i] = append(flags[i], metaFlag{Name: "yieldsTinue", Annotation: "??", Value: fMove, Level: 1})
+		} else if (prevTin == 0 || prevYield) && (curTin > 0) {
+			flags[i] = append(flags[i], metaFlag{Name: "yieldsTinueB", Annotation: "??", Value: fMove, Level: 1})
 			prevYield = true //set to 0 to force a newTinue or hadTinue next
+		} else if Cfg.Debug {
+			flags[i] = append(flags[i], metaFlag{Name: "Debug", Value: fmt.Sprintf("i: %d, curTin: %v", i, curTin), Level: 1})
 		}
 
 		if move, ok := IsTak(pos); ok {

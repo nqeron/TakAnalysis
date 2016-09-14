@@ -17,7 +17,7 @@ import (
 
 //VERSION -- current version
 const (
-	VERSION = "0.1.2"
+	VERSION = "0.1.3"
 )
 
 //regular expressions for commands
@@ -217,10 +217,13 @@ func main() {
 				ai := analysis.MakeAI(pos, *level)
 				moves, val, _ := ai.Analyze(ctx, pos)
 				fmt.Println("current value: ", val)
+				_, tin, _ := analysis.HasTinue(pos, ai)
+				fmt.Println("curTin: ", tin)
 				fmt.Printf("anticipated moves: ")
 				for _, m := range moves {
 					fmt.Printf("%s, ", ptn.FormatMove(&m))
 				}
+
 				fmt.Printf("\n")
 			case "print", "render":
 				fmt.Println(parsed.Render())
