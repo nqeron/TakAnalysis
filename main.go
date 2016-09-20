@@ -170,7 +170,7 @@ func main() {
 		}
 
 		if displayBoard {
-			cli.RenderBoard(os.Stdout, pos)
+			cli.RenderBoard(&cli.DefaultGlyphs, os.Stdout, pos)
 		}
 
 		//keep hold of last (valid) position
