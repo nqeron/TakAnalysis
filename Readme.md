@@ -24,6 +24,10 @@ takanalysis [file] [-d depth]
 ## [analyze][analyze doc]
 Single use command to analyze and annotate a given file or directory.
 
+```
+  analyze [-rv] [file ...] {-out ...}
+```
+
 ## [transformPTN][transformPTN doc]
   A program that will [transformPTN][transformPTN doc]  into a symmetrically unique PTN
   (Can also be run on a directory)
@@ -31,12 +35,17 @@ Single use command to analyze and annotate a given file or directory.
 ```
   transformPTN [-rv] [file ...] {-out ...}
 ```
-- -r=true - recurse over a directory
-- -v=true - verbose mode
-- -out= sets output file / directory, otherwise uses default
+
+## [getTaks][getTaks doc]
+  A program that will get the Taks from a given TPS, tagged in a PTN or stored in .tps. Will also work recursively over a directory
+
+```
+  getTaks [-rv] [file ...] {-out ...}
+```
 
 [analyze doc]: https://github.com/nqeron/TakAnalysis/cmd/analyze/readme.md
 [transformPTN doc]:https://github.com/nqeron/TakAnalysis/cmd/transformPTN/readme.md
+[getTaks doc]:https://github.com/nqeron/TakAnalysis/cmd/getTaks/readme.md
 
 ## TO-DOs ##
 

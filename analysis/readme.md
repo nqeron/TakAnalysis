@@ -10,6 +10,7 @@ This will open a ptn file for analysis. Once opened, this can be directed with v
 - n / next -- moves to the next ply
 - p / prev -- moves to the previous ply
 - ai -- calls up the ai analysis for the given position
+- tps -- will print out the TPS of the current position
 - exit -- ends the program
 - Alternatively navigate the plys with w/a/s/d:
   -- a/d - forward back one ply
