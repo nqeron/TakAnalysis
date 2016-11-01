@@ -170,7 +170,8 @@ func main() {
 		}
 
 		if displayBoard {
-			cli.RenderBoard(os.Stdout, pos)
+			cli.RenderBoard(&cli.DefaultGlyphs, os.Stdout, pos)
+			//cli.RenderBoard(os.Stdout, pos)
 		}
 
 		//keep hold of last (valid) position
@@ -200,6 +201,8 @@ func main() {
 				} else {
 					moveColor = tak.Black
 				}
+			case "tps":
+				fmt.Println(ptn.FormatTPS(pos))
 			case "prev", "p", "a":
 				if moveColor == tak.White {
 					moveNum--
