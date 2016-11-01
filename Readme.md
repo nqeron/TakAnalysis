@@ -19,7 +19,7 @@ The main analysis program, [takanalysis][takanalysis doc], can be run from comma
 takanalysis [file] [-d depth]
 ```
 
-[takanalysis doc]: https://github.com/nqeron/TakAnalysis/analysis/readme.md
+[takanalysis doc]:analysis/readme.md
 
 ## [analyze][analyze doc]
 Single use command to analyze and annotate a given file or directory.
@@ -43,9 +43,9 @@ Single use command to analyze and annotate a given file or directory.
   getTaks [-rv] [file ...] {-out ...}
 ```
 
-[analyze doc]: https://github.com/nqeron/TakAnalysis/cmd/analyze/readme.md
-[transformPTN doc]:https://github.com/nqeron/TakAnalysis/cmd/transformPTN/readme.md
-[getTaks doc]:https://github.com/nqeron/TakAnalysis/cmd/getTaks/readme.md
+[analyze doc]:analyze/readme.md
+[transformPTN doc]:cmd/transformPTN/readme.md
+[getTaks doc]:cmd/getTaks/readme.md
 
 ## TO-DOs ##
 
