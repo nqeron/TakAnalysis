@@ -96,9 +96,9 @@ func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
 		//values[index] = float64(val)
 
 		var e error
-		p, e = p.Move(&m.Move)
+		p, e = p.Move(m.Move)
 		if e != nil {
-			log.Fatalf("illegal move %s: %v", ptn.FormatMove(&m.Move), e)
+			log.Fatalf("illegal move %s: %v", ptn.FormatMove(m.Move), e)
 		}
 		movePos = append(movePos, p)
 	}
@@ -125,7 +125,7 @@ func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
 		wMoveM := moves[i]
 		wFlag := flags[i]
 
-		wMoveS := ptn.FormatMove(&wMoveM)
+		wMoveS := ptn.FormatMove(wMoveM)
 		wMoveS = writeMoveFlags(wMoveS, wFlag, cfg)
 
 		bMoveS := ""
@@ -134,7 +134,7 @@ func Meta(parsed *ptn.PTN, file *os.File, cfg Config) {
 			bMoveM := moves[i+1]
 			bFlag := flags[i+1]
 			bVal = values[i+1]
-			bMoveS = ptn.FormatMove(&bMoveM)
+			bMoveS = ptn.FormatMove(bMoveM)
 			bMoveS = writeMoveFlags(bMoveS, bFlag, cfg)
 		}
 
@@ -185,7 +185,7 @@ func flagPositions(movePos *[]*tak.Position, flags [][]metaFlag, ai *ai.MinimaxA
 
 		if move != nil {
 			fMove = fmt.Sprintf("Depth: %d, Move: ", depth)
-			fMove += ptn.FormatMove(move)
+			fMove += ptn.FormatMove(*move)
 		}
 		if (prevTin != 0 || prevYield) && curTin == 0 && i != len(flags)-1 {
 			flags[i] = append(flags[i], metaFlag{Name: "wasTinue", Annotation: "", Value: fMove, Level: 1})
@@ -209,7 +209,7 @@ func flagPositions(movePos *[]*tak.Position, flags [][]metaFlag, ai *ai.MinimaxA
 		}
 
 		if move, ok := IsTak(pos); ok {
-			flags[i] = append(flags[i], metaFlag{Name: "isTak", Annotation: "'", Value: ptn.FormatMove(move), Level: 1})
+			flags[i] = append(flags[i], metaFlag{Name: "isTak", Annotation: "'", Value: ptn.FormatMove(*move), Level: 1})
 		}
 
 		prevTin = curTin
@@ -291,7 +291,6 @@ func MakeAI(p *tak.Position, depth int) *ai.MinimaxAI {
 		Debug: 0,
 
 		NoSort:     !sort,
-		NoTable:    !table,
 		NoNullMove: false,
 	})
 }

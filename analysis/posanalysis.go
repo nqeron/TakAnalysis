@@ -25,7 +25,7 @@ func HasTinue(pos *tak.Position, ai *tai.MinimaxAI) (move *tak.Move, ok int, dep
 
 //IsTak - returns whether given position is Tak or not
 func IsTak(pos *tak.Position) (move *tak.Move, ok bool) {
-	p, _ := pos.Move(&tak.Move{Type: tak.Pass}) //pass and see if there's a winning Move
+	p, _ := pos.Move(tak.Move{Type: tak.Pass}) //pass and see if there's a winning Move
 	ai := MakeAI(pos, 1)                        //ai that only searches at a depth of 1
 
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Minute))

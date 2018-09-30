@@ -17,7 +17,7 @@ import (
 
 //VERSION -- current version
 const (
-	VERSION = "0.1.2"
+	VERSION = "0.1.3"
 )
 
 //regular expressions for commands
@@ -150,9 +150,9 @@ func main() {
 					case *ptn.Move:
 						if (i%3 == 2 && moveColor == tak.Black) ||
 							(i%3 == 1 && moveColor == tak.White) {
-							fmt.Printf(" [%s%s]", ptn.FormatMove(&o.Move), o.Modifiers)
+							fmt.Printf(" [%s%s]", ptn.FormatMove(o.Move), o.Modifiers)
 						} else {
-							fmt.Printf(" %s%s", ptn.FormatMove(&o.Move), o.Modifiers)
+							fmt.Printf(" %s%s", ptn.FormatMove(o.Move), o.Modifiers)
 						}
 					default:
 					}
@@ -164,7 +164,7 @@ func main() {
 		if isExplore {
 			fmt.Printf("\n {")
 			for _, m := range moveNote {
-				fmt.Printf(ptn.FormatMove(&m) + ", ")
+				fmt.Printf(ptn.FormatMove(m) + ", ")
 			}
 			fmt.Printf("}")
 		}
@@ -219,7 +219,7 @@ func main() {
 				fmt.Println("current value: ", val)
 				fmt.Printf("anticipated moves: ")
 				for _, m := range moves {
-					fmt.Printf("%s, ", ptn.FormatMove(&m))
+					fmt.Printf("%s, ", ptn.FormatMove(m))
 				}
 				fmt.Printf("\n")
 			case "print", "render":
@@ -254,7 +254,7 @@ func main() {
 				} else { // handling a move
 					moveNote = append(moveNote, newMove)
 					lastPos := pos
-					pos, err = pos.Move(&newMove)
+					pos, err = pos.Move(newMove)
 					if err != nil {
 						fmt.Println("Movement error: ", err)
 						pos = lastPos
